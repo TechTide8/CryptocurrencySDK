@@ -2,7 +2,12 @@ package CryptocurrencySDK
 
 import (
 	"github.com/TechTide8/CryptocurrencySDK/model"
+	"github.com/TechTide8/CryptocurrencySDK/wallet"
 	"github.com/shopspring/decimal"
+)
+
+var (
+	_ IWallet = wallet.ETH{}
 )
 
 type IWallet interface {
