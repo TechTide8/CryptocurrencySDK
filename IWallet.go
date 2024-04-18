@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	_ IWallet = wallet.ETH{}
+	_ IWallet = &wallet.ETH{}
 )
 
 type IWallet interface {
