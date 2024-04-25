@@ -85,8 +85,6 @@ func (client *EthClient) GetTokenBalance(contractAddr common.Address, address co
 }
 
 func (client *EthClient) Transfer(fromPri []byte, fromAddr, toAddr string, gasSpeedUp float64, amount decimal.Decimal) (txid string, maxGas decimal.Decimal, err error) {
-	// zap.S().Infof("Withdraw => Address: %s, Amount: %s", toAddr, amount.String())
-
 	privateKey, err := crypto.ToECDSA(fromPri)
 	if err != nil {
 		return "", decimal.Zero, err
@@ -152,8 +150,6 @@ func (client *EthClient) Transfer(fromPri []byte, fromAddr, toAddr string, gasSp
 }
 
 func (client *EthClient) TransferToken(contractAddr string, fromPri []byte, fromAddr, toAddr string, tokenUnit string, gasSpeedUp float64, amount decimal.Decimal) (string, decimal.Decimal, error) {
-	// client.Close()
-
 	privateKey, err := crypto.ToECDSA(fromPri)
 	if err != nil {
 		return "", decimal.Zero, err
@@ -168,13 +164,11 @@ func (client *EthClient) TransferToken(contractAddr string, fromPri []byte, from
 
 	txid := ""
 
-	//for {
 	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
 	if err != nil {
 		return "", decimal.Zero, err
 	}
 
-	// gasPrice := new(big.Int).Div(ToWei(fee, ETHER), big.NewInt(int64(gasLimit)))
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		return "", decimal.Zero, err
@@ -185,13 +179,10 @@ func (client *EthClient) TransferToken(contractAddr string, fromPri []byte, from
 	hash := sha3.NewLegacyKeccak256()
 	hash.Write(transferFnSignature)
 	methodID := hash.Sum(nil)[:4]
-	// fmt.Println(hexutil.Encode(methodID)) // 0xa9059cbb
 	paddedAddress := common.LeftPadBytes(toAddress.Bytes(), 32)
-	// fmt.Println(hexutil.Encode(paddedAddress)) // 0x0000000000000000000000004592d8f8d7b001e72cb26a73e4fa1806a51ac79d
 	amt := ToWei(amount, EthUnitFromString(tokenUnit))
 
 	paddedAmount := common.LeftPadBytes(amt.Bytes(), 32)
-	// fmt.Println(hexutil.Encode(paddedAmount)) // 0x00000000000000000000000000000000000000000000003635c9adc5dea00000
 
 	var data []byte
 	data = append(data, methodID...)
@@ -236,4 +227,3 @@ func (client *EthClient) TransferToken(contractAddr string, fromPri []byte, from
 	maxGas := WeiToDecimal(gasPrice, ETHER).Mul(decimal.NewFromInt(int64(gasLimit)))
 	return txid, maxGas, nil
 }
-
